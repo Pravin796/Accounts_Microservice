@@ -4,6 +4,10 @@ import com.pravin.accounts.constants.AccountsConstants;
 import com.pravin.accounts.dtos.CustomerDto;
 import com.pravin.accounts.dtos.ResponseDto;
 import com.pravin.accounts.services.IAccountsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+@Tag(
+        name = "CRUD REST APIs for Accounts in Pravins Bank",
+        description = "CRUD REST APIs in pravinbank to CREATE, UPDATE, FETCH, and DELETE account details"
+)
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
 @RequiredArgsConstructor
@@ -22,6 +30,14 @@ public class AccountsControllers {
 
     private final IAccountsService iAccountsService;
 
+    @Operation(
+            summary = "Create Accounts REST API",
+            description = "Rest API to  create new Customer & Accounts inside Pravin bank"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "HTTP Status CREATED"
+    )
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
 
@@ -32,6 +48,15 @@ public class AccountsControllers {
                 .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
     }
 
+    @Operation(
+            summary = "Fetch Accounts REST API",
+            description = "Rest API to fetch customer and account details using mobile number"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "400", description = "HTTP Status BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "HTTP Status NOT FOUND")
+    })
     @GetMapping("/fetch")
     public ResponseEntity<CustomerDto> fetchAccountDetails(
             @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
@@ -41,6 +66,16 @@ public class AccountsControllers {
        return ResponseEntity.status(HttpStatus.OK).body(customerDto);
     }
 
+    @Operation(
+            summary = "Update Accounts REST API",
+            description = "Rest API to update customer and account details"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "400", description = "HTTP Status BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "HTTP Status NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status INTERNAL SERVER ERROR")
+    })
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         boolean isUpdated = iAccountsService.updateAccount(customerDto);
@@ -55,6 +90,16 @@ public class AccountsControllers {
         }
     }
 
+    @Operation(
+            summary = "Delete Accounts REST API",
+            description = "Rest API to delete customer and account details using mobile number"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "400", description = "HTTP Status BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "HTTP Status NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status INTERNAL SERVER ERROR")
+    })
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto> deleteAccountDetails(
             @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
