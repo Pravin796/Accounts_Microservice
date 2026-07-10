@@ -2,9 +2,12 @@ package com.pravin.accounts.controllers;
 
 import com.pravin.accounts.constants.AccountsConstants;
 import com.pravin.accounts.dtos.CustomerDto;
+import com.pravin.accounts.dtos.ErrorResponseDto;
 import com.pravin.accounts.dtos.ResponseDto;
 import com.pravin.accounts.services.IAccountsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -74,7 +77,13 @@ public class AccountsControllers {
             @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
             @ApiResponse(responseCode = "400", description = "HTTP Status BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "HTTP Status NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP Status INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "417", description = "Expection Failed"),
+            @ApiResponse(responseCode = "500",
+                    description = "HTTP Status INTERNAL SERVER ERROR",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
     })
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
@@ -85,8 +94,8 @@ public class AccountsControllers {
                     .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
         }else{
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountsConstants.STATUS_500, AccountsConstants.MESSAGE_500));
+                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_UPDATE));
         }
     }
 
@@ -98,6 +107,7 @@ public class AccountsControllers {
             @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
             @ApiResponse(responseCode = "400", description = "HTTP Status BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "HTTP Status NOT FOUND"),
+            @ApiResponse(responseCode = "417", description = "Expection Failed"),
             @ApiResponse(responseCode = "500", description = "HTTP Status INTERNAL SERVER ERROR")
     })
     @DeleteMapping("/delete")
@@ -111,8 +121,8 @@ public class AccountsControllers {
                     .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
         }else{
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountsConstants.STATUS_500, AccountsConstants.MESSAGE_500));
+                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
         }
     }
 
